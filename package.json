@@ -1,0 +1,30 @@
+{
+	"name": "image-size-updater",
+	"publisher": "local",
+	"displayName": "Image Size Updater",
+	"description": "Insert image width/height with configurable document root",
+	"version": "0.0.1",
+	"engines": { "vscode": "^1.75.0" },
+	"license": "MIT",
+	"activationEvents": ["onStartupFinished"],
+	"main": "./extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "imageSizeUpdater.updateImageSize",
+				"title": "Update Image Size"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Image Size Updater",
+			"properties": {
+				"imageSizeUpdater.documentRoot": {
+					"type": "string",
+					"default": "",
+					"description": "Document root relative to workspace folder (e.g. 'dist'). Leave empty to use workspace root."
+				}
+			}
+		}
+	}
+}
