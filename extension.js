@@ -8,7 +8,38 @@ function getImageDimensions(filePath) {
 	if (isPng(buf)) return pngDimensions(buf);
 	if (isJpeg(buf)) return jpegDimensions(buf);
 	if (isWebp(buf)) return webpDimensions(buf);
+	if (isSvg(buf)) return svgDimensions(buf);
 	return null;
+}
+
+function isSvg(buf) {
+	return /<svg[\s>]/i.test(buf.toString('utf8'));
+}
+
+function svgDimensions(buf) {
+	const text = buf.toString('utf8');
+	const tag = text.match(/<svg[^>]*>/i);
+	if (!tag) return null;
+	const open = tag[0];
+
+	const parseLen = (attr) => {
+		const m = open.match(new RegExp(`\\b${attr}\\s*=\\s*["']\\s*([\\d.]+)\\s*(px)?\\s*["']`, 'i'));
+		return m ? Math.round(parseFloat(m[1])) : null;
+	};
+
+	let width = parseLen('width');
+	let height = parseLen('height');
+
+	if (width == null || height == null) {
+		const vb = open.match(/\bviewBox\s*=\s*["']\s*[\d.]+[\s,]+[\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)\s*["']/i);
+		if (vb) {
+			if (width == null) width = Math.round(parseFloat(vb[1]));
+			if (height == null) height = Math.round(parseFloat(vb[2]));
+		}
+	}
+
+	if (width == null || height == null) return null;
+	return { width, height };
 }
 
 function isPng(buf) {
